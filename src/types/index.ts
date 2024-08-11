@@ -1,40 +1,107 @@
+// Слой данных
+// Интерфейс для работы с данными, полученными с сервера
+export interface ILarekAPI {
+	getProductItem: (id: string) => Promise<ICard>;
+	getProductList: () => Promise<ICard[]>;
+	orderItems(order: IOrder): Promise<IOrderResults>;
+}
+
+// Работа с карточками
+// Карточка
 export interface ICard {
-    id: string;
-    description: string;
-    image: string;
-    title: string;
-    category: string;
-    price: number;
+	id: string;
+	title: string;
+	price: number | null;
+	description: string;
+	image: string;
+	category: CardCategory;
+	button: string;
 }
 
-export interface  IUser {
-    payment: string;
-    email: string;
-    phone: string;
-    address: string;
-    total: number;
-    items: ICard[];
+export interface ICardActions {
+	onClick: (event: MouseEvent) => void;
 }
 
-export interface ICardsData {
-    cards: ICard[];
-    prewiev: string | null;
-	deleteCard(cardId: string, payload: Function | null): void;
-	getCard(cardId: string): ICard;
+export interface ICardList {
+	total: number;
+	items: ICard[];
 }
 
-export interface IUserData{
-    getUserInfo(): TUserTotal;
-	setUserInfo(userData: IUser): void;
-	checkUserValidation(data: Record<keyof TUserContact, string> | Record<keyof TUserAdres, string>): boolean;
+// Категория для карточки
+export type CardCategory =
+	| 'софт-скилл'
+	| 'другое'
+	| 'дополнительное'
+	| 'хард-скилл'
+	| 'кнопка';
+
+// Тип карточки для главной страницы
+export type TCardPage = Pick<
+	ICard,
+	'id' | 'title' | 'price' | 'image' | 'category'
+>;
+
+// Тип карточки для корзины
+export type TCardBasket = Pick<ICard, 'id' | 'title' | 'price'>;
+
+// Корзина
+export interface IBasket {
+	items: TCardBasket[];
+	sum: number | null;
 }
 
-export type TCardInfo = Pick<ICard, 'description' | 'image' | 'title' | 'category' | 'price'>;
+// Заказ
+export interface IOrder {
+	total: number;
+	items: string[];
+	email: string;
+	phone: string;
+	address: string;
+	payment: string;
+}
 
-export type TCardBasket = Pick<ICard, 'title' | 'price'>;
+// Тип оплаты заказа
+export type PaymentMethod = 'онлайн' | '' | 'при получении';
 
-export type TUserAdres = Pick<IUser, 'address'>;
+// Тип для заказа с формой способа оплаты и адреса
+export type TOrderPayment = Pick<IOrder, 'payment' | 'address'>;
 
-export type TUserContact = Pick<IUser, 'email' | 'phone'>;
+// Тип для заказа с формой почты и телефона
+export type TOrderContacts = Pick<IOrder, 'email' | 'phone'>;
 
-export type TUserTotal = Pick<IUser, 'total'>;
+export type TOrderField = TOrderContacts & TOrderPayment;
+// Интерфейс выполнения успешной операции
+export interface IOrderResults {
+	id: string;
+	total: number;
+}
+
+// Тип ошибок форм заказа
+export type FormErrors = Partial<Record<keyof IOrder, string>>;
+
+// Слой представления
+// Интерфейс компонента страницы
+export interface IPage {
+	counter: number;
+	catalog: HTMLElement[];
+	locked: boolean;
+}
+
+// Интерфейс компонента форм
+export interface IForm {
+	valid: boolean;
+	errors: string[];
+}
+
+// Интерфейс компонента модального окна
+export interface IModalData {
+	content: HTMLElement;
+}
+
+// Интерфейс компонента успешного оформления заказа
+export interface ISuccess {
+	total: number;
+}
+export interface ISuccessActions {
+	onClick: () => void;
+}
